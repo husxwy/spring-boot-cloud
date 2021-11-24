@@ -28,7 +28,9 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
-        <docker.image.prefix>spring-boot-cloud</docker.image.prefix>
+        <!--        <docker.image.prefix>spring-boot-cloud</docker.image.prefix>-->
+        <docker.image.prefix>library</docker.image.prefix>
+
         <spring.cloud.version>Hoxton.SR5</spring.cloud.version>
         <spring-boot-admin.version>1.5.4</spring-boot-admin.version>
         <fabric8.maven.plugin.version>4.4.1</fabric8.maven.plugin.version>
@@ -145,14 +147,19 @@
                     <configuration>
                         <images>
                             <image>
-                                <name>ccr.ccs.tencentyun.com/${docker.image.prefix}/${project.artifactId}:v5</name>
+                                <!--                                <name>ccr.ccs.tencentyun.com/${docker.image.prefix}/${project.artifactId}:v5</name>-->
+
+                                <name>harbor.husx.top/${docker.image.prefix}/${project.artifactId}:${project.version}
+                                </name>
                                 <alias>${project.name}</alias>
                                 <build>
                                     <dockerFile>${project.basedir}/Dockerfile</dockerFile>
                                 </build>
+
                                 <run>
                                     <namingStrategy>alias</namingStrategy>
                                 </run>
+
                             </image>
                         </images>
                     </configuration>
@@ -173,15 +180,30 @@
                         <executions>
                             <execution>
                                 <id>fmp</id>
+                                <phase>install</phase>
                                 <goals>
                                     <goal>resource</goal>
                                     <goal>build</goal>
+                                    <goal>push</goal>
                                 </goals>
                             </execution>
                         </executions>
+<!--                        <executions>-->
+<!--                            <execution>-->
+<!--                                <id>docker-exec</id>-->
+<!--                                &lt;!&ndash; 绑定mvn install阶段，当执行mvn install时 就会执行docker build 和docker push&ndash;&gt;-->
+<!--                                <phase>install</phase>-->
+<!--                                <goals>-->
+<!--                                    <goal>build</goal>-->
+<!--                                    <goal>push</goal>-->
+<!--                                </goals>-->
+<!--                            </execution>-->
+<!--                        </executions>-->
                         <configuration>
                             <!--docker需要开启远程访问-->
-<!--                            <dockerHost>http://haiyang.dockerhost.com:2375</dockerHost>-->
+                            <!--                            <dockerHost>http://haiyang.dockerhost.com:2375</dockerHost>-->
+<!--                            <dockerHost>http://10.8.14.46:2375</dockerHost>-->
+                            <dockerHost>http://127.0.0.1:2375</dockerHost>
                             <enricher>
                                 <config>
                                     <fmp-service>
@@ -190,15 +212,18 @@
                                 </config>
                             </enricher>
                             <!--registry地址,用于推送镜像-->
-<!--                            <registry>ccr.ccs.tencentyun.com</registry>-->
+                            <!--                            <registry>ccr.ccs.tencentyun.com</registry>-->
+                            <registry>harbor.husx.top</registry>
                             <!--认证配置,用于私有registry认证,如果忘记了可以去阿里的registry查看-->
                             <authConfig>
                                 <push>
-                                    <username>your username</username>
-                                    <password>your password</password>
+                                    <username>admin</username>
+                                    <password>Harbor123</password>
                                 </push>
                             </authConfig>
                         </configuration>
+
+
                     </plugin>
                 </plugins>
             </build>
